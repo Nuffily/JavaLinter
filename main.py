@@ -219,7 +219,6 @@ def check_naming_conventions(lines, filename):
                 (?:\s*\[\s*\])*                # Массив (опционально, многомерный)
                 \s*                            # Пробелы после типа
             )
-            (\w+)                              # Имя метода/переменной
             \s+
             ([a-zA-Z_]\w*)                     # Имя метода (захватывающая группа)
             \s*                                # Пробелы
@@ -238,7 +237,6 @@ def check_naming_conventions(lines, filename):
         if method_name_match and "(" in line and ")" in line:
             method_name = method_name_match.group(2)
             if not method_name[0].islower():
-                print(method_name_match.group(1))
                 errors.append({
                     'file': filename,
                     'line': i + 1,
@@ -246,21 +244,46 @@ def check_naming_conventions(lines, filename):
                     'message': "Имена методов должны начинаться со строчной буквы"
                 })
 
-        # variable_declaration_pattern = r"^\s*(?:(?:public|private|protected|static|final)\s+)*([A-Za-z_][\w]+)\s*(?:(?:<.*>|[.*])\s*)*\s+([A-Za-z_][\w]*)(?!\()"
+        variable_declaration_pattern = r"^\s*(?:(?:public|private|protected|static|final)\s+)*([A-Za-z_][\w]+)\s*(?:(?:<.*>|[.*])\s*)*\s+([A-Za-z_][\w]*)\s*(?!\()"
+        variable_declaration_pattern = r"^\s*(?:(?:public|private|protected|static|final)\s+)*([A-Za-z_][\w]+)\s*(?:(?:<.*>|[.*])\s*)*\s+\b([A-Za-z_]\w*)\b\s*(?!\()"
+        # variable_declaration_pattern = r"""
+        #     ^\s*                                  # Начало строки
+        #     (?:(?:public|private|protected|static|final)\s+)*  # Модификаторы
+        #     ([\w<>[\],]+)                        # Тип (группа 1)
+        #     \s+                                  # Пробелы
+        #     ([\w]+)                              # Имя (группа 2)
+        #     \s*                                  # Пробелы
+        #     (?!\()                               # Запрет на открывающую скобку
+        # """
         variable_declaration_pattern = r"""
-            ^\s*                                  # Начало строки
-            (?:(?:public|private|protected|static|final)\s+)*  # Модификаторы
-            ([\w<>[\],]+)                        # Тип (группа 1)
-            \s+                                  # Пробелы
-            ([\w]+)                              # Имя (группа 2)
-            \s*                                  # Пробелы
-            (?!\()                               # Запрет на открывающую скобку
-        """
-        variable_declaration_match = re.search(variable_declaration_pattern, line, re.MULTILINE)
+                    ^\s*                                  # Начало строки
+            (?:                                  # Группа для модификаторов
+                (?:public|private|protected|     # Модификаторы доступа
+                static|final|                    # Другие модификаторы
+                synchronized|abstract|default)   # Дополнительные модификаторы
+                \s+                             # Пробелы после модификатора
+            )*                                 # Ноль или более модификаторов
+            (                                   # Группа для типа (захватывающая)
+                (?!public|private|protected|    # Запрет на модификаторы
+                static|final|                   # в качестве типа
+                synchronized|abstract|default)  #
+                \w+                            # Базовый тип
+                (?:\s*<[^>]+>)?                # Дженерик часть (опционально)
+                (?:\s*\[\s*\])*                # Массив (опционально, многомерный)
+                \s*                            # Пробелы после типа
+            )
+            \s+
+            \b([a-zA-Z_]\w*)\b                     # Имя метода (захватывающая группа)
+            \s*                                # Пробелы
+            (?!\()                                 # Открывающая скобка
+            """
+
+
+        variable_declaration_match = re.search(variable_declaration_pattern, line, re.VERBOSE)
         if variable_declaration_match:
 
             variable_name = variable_declaration_match.group(2)
-
+            print(variable_name)
             if not variable_name[0].islower() and variable_declaration_match.group(1) not in (
             "class", "return", "for", "switch", "case"):
                 print(variable_name)
