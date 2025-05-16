@@ -1,6 +1,5 @@
-from dialects import Dialect
-from shared import JavaPatterns
-
+from java_linter.dialects import Dialect
+from java_linter.shared import JavaPatterns
 
 class EmptyLineLinter:
 

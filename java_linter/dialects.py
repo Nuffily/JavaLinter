@@ -1,16 +1,10 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import NamedTuple
 
 class NamingRule(Enum):
     CAMEL_CASE_CAPITAL = "CAMEL_CASE_CAPITAL"
     CAMEL_CASE_LOWER = "CAMEL_CASE_LOWER"
     SNAKE_CASE = "SNAKE_CASE"
-
-# class Preference(Enum):
-#     SHOULD_BE = "SHOULD_BE"
-#     SHOULD_NOT_BE = "SHOULD_NOT_BE"
-#     DOES_NOT_MATTER = "DOES_NOT_MATTER"
 
 @dataclass
 class NamingDialect:

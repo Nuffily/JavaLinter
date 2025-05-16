@@ -1,7 +1,7 @@
 import re
 
-from dialects import Dialect, NamingRule
-from shared import JavaPatterns
+from java_linter.dialects import Dialect, NamingRule
+from java_linter.shared import JavaPatterns
 
 
 class NamingLinter:

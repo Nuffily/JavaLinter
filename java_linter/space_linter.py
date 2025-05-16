@@ -1,5 +1,5 @@
 import re
-from dialects import Dialect
+from java_linter.dialects import Dialect
 
 
 class SpaceLinter:
@@ -67,7 +67,6 @@ class SpaceLinter:
 
             if spaces_match.match(line):
 
-                print(i)
                 for match in re.finditer(r"\S\s\s", line):
                     errors.append({
                         'file': filename,

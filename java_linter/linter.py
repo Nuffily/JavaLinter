@@ -1,10 +1,11 @@
-import json
-from fileinput import filename
 
-from dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, EmptyLineCountDialect
-from empty_lines_liner import EmptyLineLinter
-from naming_linter import NamingLinter
-from space_linter import SpaceLinter
+
+import json
+
+from java_linter.dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, EmptyLineCountDialect
+from java_linter.empty_lines_liner import EmptyLineLinter
+from java_linter.naming_linter import NamingLinter
+from java_linter.space_linter import SpaceLinter
 
 
 class Linter:
@@ -47,7 +48,7 @@ class Linter:
                 no_around_brackets=True,
                 after_comma=True,
                 no_before_comma=True,
-                no_before_dot=True,
+                no_around_dot=True,
                 no_before_dot_comma=True,
                 may_be_more_that_one_space=False
             ),
