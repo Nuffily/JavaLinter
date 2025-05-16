@@ -86,12 +86,10 @@ class EmptyLineLinter:
 
                 if '{' in line:
                     end = self.look_for_end(lines, i)
-                    print(i, end)
 
                     if not end:
                         continue
                 else:
-                    print(i, line)
                     end = i + 1
 
                 count = 0

@@ -1,9 +1,10 @@
 import json
 from fileinput import filename
 
-from dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, Preference, EmptyLineCountDialect
+from dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, EmptyLineCountDialect
 from empty_lines_liner import EmptyLineLinter
 from naming_linter import NamingLinter
+from space_linter import SpaceLinter
 
 
 class Linter:
@@ -12,11 +13,13 @@ class Linter:
         self.dialect = self._get_dialect(dialect_filename)
         self.naming_linter = NamingLinter(self.dialect)
         self.empty_line_linter = EmptyLineLinter(self.dialect)
+        self.space_linter = SpaceLinter(self.dialect)
 
     def do(self, lines: list[str], filename: str):
         errors = []
         errors.extend(self.naming_linter.get_errors(lines, filename))
         errors.extend(self.empty_line_linter.get_errors(lines, filename))
+        errors.extend(self.space_linter.get_errors(lines, filename))
         return errors
 
     def _get_dialect(self, dialect_filename: str):
@@ -40,10 +43,10 @@ class Linter:
                 variables=NamingRule.CAMEL_CASE_LOWER
             ),
             spaces=SpaceDialect(
-                around_operators=Preference.SHOULD_BE,
-                around_brackets=Preference.SHOULD_BE,
-                after_comma=Preference.SHOULD_BE,
-                before_comma=Preference.SHOULD_BE,
+                around_operators=True,
+                around_brackets=True,
+                after_comma=True,
+                before_comma=True,
                 may_be_more_that_one_space=False
             ),
             empty_lines=EmptyLineCountDialect(
@@ -65,10 +68,10 @@ class Linter:
 
         spaces_data = data["spaces"]
         spaces = SpaceDialect(
-            around_operators=Preference(spaces_data["around_operators"]),
-            around_brackets=Preference(spaces_data["around_brackets"]),
-            after_comma=Preference(spaces_data["after_comma"]),
-            before_comma=Preference(spaces_data["before_comma"]),
+            around_operators=spaces_data["around_operators"],
+            around_brackets=spaces_data["around_brackets"],
+            after_comma=spaces_data["after_comma"],
+            before_comma=spaces_data["before_comma"],
             may_be_more_that_one_space=bool(spaces_data["may_be_more_that_one_space"])
         )
 
