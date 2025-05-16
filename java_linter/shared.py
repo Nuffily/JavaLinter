@@ -3,7 +3,8 @@ import re
 
 class JavaPatterns:
 
-    CLASS_PATTERN = re.compile(r"""
+    CLASS_PATTERN = re.compile(
+        r"""
         ^\s*
         (?:
             (?:public|private|protected|
@@ -13,7 +14,9 @@ class JavaPatterns:
         )*
         (?:class|interface|enum)\s+([A-Za-z_]\w*
     )
-    """, re.VERBOSE)
+    """,
+        re.VERBOSE,
+    )
 
     VAR_PATTERN = re.compile(
         r"""
@@ -37,7 +40,8 @@ class JavaPatterns:
                     \b([a-zA-Z_]\w*)\b                     # Имя метода (захватывающая группа)
                     \s*                                # Пробелы
                     (?!\()                                 # Открывающая скобка
-                    """, re.VERBOSE
+                    """,
+        re.VERBOSE,
     )
 
     METHOD_PATTERN = re.compile(
@@ -67,5 +71,6 @@ class JavaPatterns:
             \s*
             (?:throws\s+[\w\s,]+)?
             \s*
-        """, re.VERBOSE
+        """,
+        re.VERBOSE,
     )

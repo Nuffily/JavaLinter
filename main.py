@@ -1,12 +1,13 @@
 import sys
+from typing import Any
 
 from java_linter.linter import Linter
 
 
-def lint_java_code(filename: str, linter: Linter):
+def lint_java_code(filename: str, linter: Linter) -> list[Any]:
     """Выполняет линтинг Java-кода в заданном файле."""
     try:
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             lines = f.readlines()
     except FileNotFoundError:
         print(f"Файл не найден: {filename}")
@@ -20,7 +21,7 @@ def lint_java_code(filename: str, linter: Linter):
     return all_errors
 
 
-def main():
+def main() -> None:
     """Главная функция для запуска линтера."""
 
     if len(sys.argv) < 3:
