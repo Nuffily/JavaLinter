@@ -1,0 +1,20 @@
+
+{
+  "naming": {
+    "classes": "CAMEL_CASE_CAPITAL",
+    "methods": "CAMEL_CASE_LOWER",
+    "variables": "CAMEL_CASE_LOWER"
+  },
+  "spaces": {
+    "around_operators": "SHOULD_BE",
+    "around_brackets": "SHOULD_BE",
+    "after_comma": "SHOULD_BE",
+    "before_comma": "SHOULD_BE",
+    "may_be_more_that_one_space": false
+  },
+  "empty_lines": {
+    "max_empty": 2,
+    "after_method": 2,
+    "after_class": 3
+  }
+}
