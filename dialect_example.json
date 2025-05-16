@@ -13,8 +13,8 @@
     "may_be_more_that_one_space": false
   },
   "empty_lines": {
-    "max_empty": 2,
-    "after_method": 2,
+    "max_empty": 3,
+    "after_method": 0,
     "after_class": 3
   }
 }

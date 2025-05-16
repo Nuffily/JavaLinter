@@ -2,6 +2,7 @@ import json
 from fileinput import filename
 
 from dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, Preference, EmptyLineCountDialect
+from empty_lines_liner import EmptyLineLinter
 from naming_linter import NamingLinter
 
 
@@ -10,9 +11,13 @@ class Linter:
     def __init__(self, dialect_filename: str):
         self.dialect = self._get_dialect(dialect_filename)
         self.naming_linter = NamingLinter(self.dialect)
+        self.empty_line_linter = EmptyLineLinter(self.dialect)
 
-    def do(self, lines: str, filename: str):
-        return self.naming_linter.get_errors(lines, filename)
+    def do(self, lines: list[str], filename: str):
+        errors = []
+        errors.extend(self.naming_linter.get_errors(lines, filename))
+        errors.extend(self.empty_line_linter.get_errors(lines, filename))
+        return errors
 
     def _get_dialect(self, dialect_filename: str):
         try:

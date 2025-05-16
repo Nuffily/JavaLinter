@@ -1,6 +1,7 @@
 import re
 
 from dialects import Dialect, NamingRule
+from shared import JavaPatterns
 
 
 class NamingLinter:
@@ -9,18 +10,19 @@ class NamingLinter:
         self.class_dialect = dialect.naming.classes
         self.method_dialect = dialect.naming.methods
         self.var_dialect = dialect.naming.variables
-        self.CLASS_RE = re.compile(r"class\s+([A-Za-z_]\w*)")
-        self.METHOD_RE = self.complile_method_re()
-        self.VAR_RE = self.complile_var_re()
 
-    def get_errors(self, lines: str, filename: str):
+        self.CLASS_RE = JavaPatterns.CLASS_PATTERN
+        self.METHOD_RE = JavaPatterns.METHOD_PATTERN
+        self.VAR_RE = JavaPatterns.VAR_PATTERN
+
+    def get_errors(self, lines: list[str], filename: str):
         errors = []
         errors.extend(self.check_class_names(lines, filename))
         errors.extend(self.check_method_names(lines, filename))
         errors.extend(self.check_var_names(lines, filename))
         return errors
 
-    def check_class_names(self, lines: str, filename: str):
+    def check_class_names(self, lines: list[str], filename: str):
         errors = []
 
         for i, line in enumerate(lines):
@@ -28,6 +30,7 @@ class NamingLinter:
 
             if class_name_match:
                 class_name = class_name_match.group(1)
+
                 if self.class_dialect == NamingRule.SNAKE_CASE:
                     if not self.check_is_snake_case(class_name):
                         errors.append({
@@ -57,7 +60,7 @@ class NamingLinter:
                         })
 
                 elif self.class_dialect == NamingRule.CAMEL_CASE_LOWER:
-                    if not class_name[0].isupper():
+                    if not class_name[0].islower():
                         errors.append({
                             'file': filename,
                             'line': i + 1,
@@ -67,7 +70,7 @@ class NamingLinter:
 
         return errors
 
-    def check_method_names(self, lines: str, filename: str):
+    def check_method_names(self, lines: list[str], filename: str):
         errors = []
 
         for i, line in enumerate(lines):
@@ -116,7 +119,7 @@ class NamingLinter:
 
         return errors
 
-    def check_var_names(self, lines: str, filename: str):
+    def check_var_names(self, lines: list[str], filename: str):
         errors = []
 
         for i, line in enumerate(lines):
@@ -165,12 +168,6 @@ class NamingLinter:
                                 'column': variable_declaration_match.start(2) + 1,
                                 'message': "Имена переменных должны начинаться со строчной буквы"
                             })
-                    # errors.append({
-                    #     'file': filename,
-                    #     'line': i + 1,
-                    #     'column': variable_declaration_match.start(2) + 1,
-                    #     'message': "Имена переменных должны начинаться со строчной буквы"
-                    # })
 
         return errors
 
@@ -183,13 +180,6 @@ class NamingLinter:
 
         Returns:
             bool: True если имя валидно, False если нет
-
-        Правила snake_case для классов:
-        1. Только строчные буквы a-z
-        2. Цифры 0-9 (но не в начале)
-        3. Одиночные подчеркивания _ между словами
-        4. Не должно начинаться/заканчиваться подчеркиванием
-        5. Не должно содержать двойных подчеркиваний __
         """
         name = name.strip()
 
@@ -206,81 +196,59 @@ class NamingLinter:
 
         return True
 
-    def complile_method_re(self):
-        return re.compile(
-            r"""
-                ^\s*
-                (?:
-                    (?:public|private|protected|
-                    static|final|
-                    synchronized|abstract|default)
-                    \s+
-                )*
-                (
-                    (?!public|private|protected|
-                    static|final|
-                    synchronized|abstract|default)
-                    \w+
-                    (?:\s*<[^>]+>)?
-                    (?:\s*\[\s*\])*
-                    \s*
-                )
-                \s+
-                ([a-zA-Z_]\w*)
-                \s*
-                \(
-                [^)]*
-                \)
-                \s*
-                (?:throws\s+[\w\s,]+)?
-                \s*
-            """, re.VERBOSE
-        )
-
-    def complile_var_re(self):
-        return re.compile(
-            # r"""
-            #     ^\s*
-            #     (?:
-            #         (?:public|private|protected|
-            #         static|final|
-            #         synchronized|abstract|default)
-            #         \s+
-            #     )*
-            #     (
-            #         (?!public|private|protected|
-            #         static|final|
-            #         synchronized|abstract|default)
-            #         \w+
-            #         (?:\s*<[^>]+>)?
-            #         (?:\s*\[\s*\])*
-            #         \s*
-            #     )
-            #     \s+
-            #     \b([a-zA-Z_]\w*)\b
-            #     \s*
-            #     (?!\()
-            # """, re.VERBOSE
-            r"""
-                                ^\s*                                  # Начало строки
-                        (?:                                  # Группа для модификаторов
-                            (?:public|private|protected|
-                            static|final|
-                            synchronized|abstract|default)
-                            \s+                             # Пробелы после модификатора
-                        )*                                 # Ноль или более модификаторов
-                        \b(                                   # Группа для типа (захватывающая)
-                            (?!public|private|protected|    # Запрет на модификаторы
-                            static|final|                   # в качестве типа
-                            synchronized|abstract|default)  #
-                            \w+                            # Базовый тип
-                            (?:\s*<[^>]+>)?                # Дженерик часть (опционально)
-                            (?:\s*\[\s*\])*                # Массив (опционально, многомерный)
-                            \s*                            # Пробелы после типа
-                        )\b
-                        \s+
-                        \b([a-zA-Z_]\w*)\b                     # Имя метода (захватывающая группа)
-                        \s*                                # Пробелы
-                        (?!\()                                 # Открывающая скобка
-                        """, re.VERBOSE
-        )
+    # def complile_method_re(self):
+    #     return re.compile(
+    #         r"""
+    #             ^\s*
+    #             (?:
+    #                 (?:public|private|protected|
+    #                 static|final|
+    #                 synchronized|abstract|default)
+    #                 \s+
+    #             )*
+    #             (
+    #                 (?!public|private|protected|
+    #                 static|final|
+    #                 synchronized|abstract|default)
+    #                 \w+
+    #                 (?:\s*<[^>]+>)?
+    #                 (?:\s*\[\s*\])*
+    #                 \s*
+    #             )
+    #             \s+
+    #             ([a-zA-Z_]\w*)
+    #             \s*
+    #             \(
+    #             [^)]*
+    #             \)
+    #             \s*
+    #             (?:throws\s+[\w\s,]+)?
+    #             \s*
+    #         """, re.VERBOSE
+    #     )
+    #
+    # def complile_var_re(self):
+    #     return re.compile(
+    #         r"""
+    #                             ^\s*                                  # Начало строки
+    #                     (?:                                  # Группа для модификаторов
+    #                         (?:public|private|protected|
+    #                         static|final|
+    #                         synchronized|abstract|default)
+    #                         \s+                             # Пробелы после модификатора
+    #                     )*                                 # Ноль или более модификаторов
+    #                     \b(                                   # Группа для типа (захватывающая)
+    #                         (?!public|private|protected|    # Запрет на модификаторы
+    #                         static|final|                   # в качестве типа
+    #                         synchronized|abstract|default)  #
+    #                         \w+                            # Базовый тип
+    #                         (?:\s*<[^>]+>)?                # Дженерик часть (опционально)
+    #                         (?:\s*\[\s*\])*                # Массив (опционально, многомерный)
+    #                         \s*                            # Пробелы после типа
+    #                     )\b
+    #                     \s+
+    #                     \b([a-zA-Z_]\w*)\b                     # Имя метода (захватывающая группа)
+    #                     \s*                                # Пробелы
+    #                     (?!\()                                 # Открывающая скобка
+    #                     """, re.VERBOSE
+    #     )

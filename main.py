@@ -323,7 +323,7 @@ def lint_java_code(filename, linter: Linter):
 
     all_errors = []
     all_errors.extend(check_spacing(lines, filename))
-    all_errors.extend(check_consecutive_empty_lines(lines, filename, 3))
+    # all_errors.extend(check_consecutive_empty_lines(lines, filename, 3))
     # all_errors.extend(check_empty_lines(lines, filename))
     # all_errors.extend(check_naming_conventions(lines, filename))
     all_errors.extend(linter.do(lines, filename))
