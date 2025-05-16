@@ -5,42 +5,42 @@ from java_linter.dialects import Dialect
 class SpaceLinter:
 
     def __init__(self, dialect: Dialect):
-        self.after_comma = dialect.spaces.after_comma
-        self.no_before_comma = dialect.spaces.no_before_comma
-        self.no_around_brackets = dialect.spaces.no_around_brackets
-        self.around_operators = dialect.spaces.around_operators
-        self.may_be_more_that_one_space = dialect.spaces.may_be_more_that_one_space
+        self._after_comma = dialect.spaces.after_comma
+        self._no_before_comma = dialect.spaces.no_before_comma
+        self._no_around_brackets = dialect.spaces.no_around_brackets
+        self._around_operators = dialect.spaces.around_operators
+        self._may_be_more_that_one_space = dialect.spaces.may_be_more_that_one_space
 
-        self.no_before_dot_comma = dialect.spaces.no_before_dot_comma
-        self.no_around_dot = dialect.spaces.no_around_dot
+        self._no_before_dot_comma = dialect.spaces.no_before_dot_comma
+        self._no_around_dot = dialect.spaces.no_around_dot
 
-    def get_errors(self, lines: list[str], filename: str):
+    def seek_for_errors(self, lines: list[str], filename: str):
         errors = []
 
-        if self.after_comma:
-            errors.extend(self.check_spaces_after_comma(lines, filename))
+        if self._after_comma:
+            errors.extend(self._check_spaces_after_comma(lines, filename))
 
-        if self.no_before_comma:
-            errors.extend(self.check_no_spaces_before_comma(lines, filename))
+        if self._no_before_comma:
+            errors.extend(self._check_no_spaces_before_comma(lines, filename))
 
-        if self.no_around_brackets:
-            errors.extend(self.check_no_spaces_around_brackets(lines, filename))
+        if self._no_around_brackets:
+            errors.extend(self._check_no_spaces_around_brackets(lines, filename))
 
-        if self.around_operators:
-            errors.extend(self.check_no_spaces_around_operators(lines, filename))
+        if self._around_operators:
+            errors.extend(self._check_no_spaces_around_operators(lines, filename))
 
-        if self.no_before_dot_comma:
-            errors.extend(self.check_no_spaces_before_dot_comma(lines, filename))
+        if self._no_before_dot_comma:
+            errors.extend(self._check_no_spaces_before_dot_comma(lines, filename))
 
-        if self.no_around_dot:
-            errors.extend(self.check_no_spaces_around_dot(lines, filename))
+        if self._no_around_dot:
+            errors.extend(self._check_no_spaces_around_dot(lines, filename))
 
-        if not self.may_be_more_that_one_space:
+        if not self._may_be_more_that_one_space:
             errors.extend(self.check_no_spaces_more_that_one(lines, filename))
 
         return errors
 
-    def check_spaces_after_comma(self, lines: list[str], filename: str):
+    def _check_spaces_after_comma(self, lines: list[str], filename: str):
 
         errors = []
 
@@ -77,7 +77,7 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_before_comma(self, lines: list[str], filename: str):
+    def _check_no_spaces_before_comma(self, lines: list[str], filename: str):
 
         errors = []
 
@@ -94,7 +94,7 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_around_dot(self, lines: list[str], filename: str):
+    def _check_no_spaces_around_dot(self, lines: list[str], filename: str):
 
         errors = []
 
@@ -118,7 +118,7 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_before_dot_comma(self, lines: list[str], filename: str):
+    def _check_no_spaces_before_dot_comma(self, lines: list[str], filename: str):
 
         errors = []
 
@@ -135,7 +135,7 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_around_brackets(self, lines: list[str], filename: str):
+    def _check_no_spaces_around_brackets(self, lines: list[str], filename: str):
 
         errors = []
 
@@ -188,7 +188,7 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_around_operators(self, lines: list[str], filename: str):
+    def _check_no_spaces_around_operators(self, lines: list[str], filename: str):
 
         errors = []
 

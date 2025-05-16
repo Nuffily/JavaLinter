@@ -1,28 +1,29 @@
 from java_linter.dialects import Dialect
 from java_linter.shared import JavaPatterns
 
+
 class EmptyLineLinter:
 
     def __init__(self, dialect: Dialect):
-        self.after_class = dialect.empty_lines.after_class
-        self.after_method = dialect.empty_lines.after_method
-        self.max_empty = dialect.empty_lines.max_empty
+        self._after_class = dialect.empty_lines.after_class
+        self._after_method = dialect.empty_lines.after_method
+        self._max_empty = dialect.empty_lines.max_empty
 
-    def get_errors(self, lines: list[str], filename: str):
+    def seek_for_errors(self, lines: list[str], filename: str):
         errors = []
 
-        if self.max_empty:
-            errors.extend(self.check_consecutive_empty_lines(lines, filename))
+        if self._max_empty:
+            errors.extend(self._check_consecutive_empty_lines(lines, filename))
 
-        if self.after_class:
-            errors.extend(self.check_empty_lines_after_class(lines, filename))
+        if self._after_class:
+            errors.extend(self._check_empty_lines_after_class(lines, filename))
 
-        if self.after_method:
-            errors.extend(self.check_empty_lines_after_method(lines, filename))
+        if self._after_method:
+            errors.extend(self._check_empty_lines_after_method(lines, filename))
 
         return errors
 
-    def check_consecutive_empty_lines(self, lines: list[str], filename: str):
+    def _check_consecutive_empty_lines(self, lines: list[str], filename: str):
         """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
         errors = []
 
@@ -32,18 +33,18 @@ class EmptyLineLinter:
             if line.strip() == "":
                 count += 1
             else:
-                if count > self.max_empty:
+                if count > self._max_empty:
                     errors.append({
                         'file': filename,
                         'line': i,
                         'column': 1,
-                        'message': f"Обнаружено {count} последовательных пустых строк, а должно быть не больше {self.max_empty}"
+                        'message': f"Обнаружено {count} последовательных пустых строк, а должно быть не больше {self._max_empty}"
                     })
                 count = 0
 
         return errors
 
-    def check_empty_lines_after_class(self, lines: list[str], filename: str):
+    def _check_empty_lines_after_class(self, lines: list[str], filename: str):
         """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
         errors = []
 
@@ -53,7 +54,7 @@ class EmptyLineLinter:
 
             if JavaPatterns.CLASS_PATTERN.match(line):
 
-                end = self.look_for_end(lines, i)
+                end = self._look_for_end(lines, i)
 
                 if not end:
                     continue
@@ -63,19 +64,19 @@ class EmptyLineLinter:
                     if line_2.strip() == "":
                         count += 1
                     else:
-                        if count != self.after_class:
+                        if count != self._after_class:
                             errors.append({
                                 'file': filename,
                                 'line': end + 2,
                                 'column': 1,
-                                'message': f"Обнаружено {count} пустых строк после класса, а должно быть {self.after_class}"
+                                'message': f"Обнаружено {count} пустых строк после класса, а должно быть {self._after_class}"
                             })
 
                         count = 0
 
         return errors
 
-    def check_empty_lines_after_method(self, lines: list[str], filename: str):
+    def _check_empty_lines_after_method(self, lines: list[str], filename: str):
         """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
         errors = []
 
@@ -84,7 +85,7 @@ class EmptyLineLinter:
             if JavaPatterns.METHOD_PATTERN.match(line):
 
                 if '{' in line:
-                    end = self.look_for_end(lines, i)
+                    end = self._look_for_end(lines, i)
 
                     if not end:
                         continue
@@ -98,19 +99,19 @@ class EmptyLineLinter:
                     if line_2.strip() == "":
                         count += 1
                     else:
-                        if count != self.after_method:
+                        if count != self._after_method:
                             errors.append({
                                 'file': filename,
                                 'line': end + 2,
                                 'column': 1,
-                                'message': f"Обнаружено {count} пустых строк после метода, а должно быть {self.after_method}"
+                                'message': f"Обнаружено {count} пустых строк после метода, а должно быть {self._after_method}"
                             })
 
                         break
 
         return errors
 
-    def look_for_end(self, lines: list[str], index: int) -> int:
+    def _look_for_end(self, lines: list[str], index: int) -> int:
 
         open_brackets_count = 1
 

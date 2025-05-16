@@ -1,5 +1,3 @@
-
-
 import json
 
 from java_linter.dialects import Dialect, NamingDialect, NamingRule, SpaceDialect, EmptyLineCountDialect
@@ -11,16 +9,16 @@ from java_linter.space_linter import SpaceLinter
 class Linter:
 
     def __init__(self, dialect_filename: str):
-        self.dialect = self._get_dialect(dialect_filename)
-        self.naming_linter = NamingLinter(self.dialect)
-        self.empty_line_linter = EmptyLineLinter(self.dialect)
-        self.space_linter = SpaceLinter(self.dialect)
+        self._dialect = self._get_dialect(dialect_filename)
+        self._naming_linter = NamingLinter(self._dialect)
+        self._empty_line_linter = EmptyLineLinter(self._dialect)
+        self._space_linter = SpaceLinter(self._dialect)
 
-    def do(self, lines: list[str], filename: str):
+    def seek_for_errors(self, lines: list[str], filename: str):
         errors = []
-        errors.extend(self.naming_linter.get_errors(lines, filename))
-        errors.extend(self.empty_line_linter.get_errors(lines, filename))
-        errors.extend(self.space_linter.get_errors(lines, filename))
+        errors.extend(self._naming_linter.seek_for_errors(lines, filename))
+        errors.extend(self._empty_line_linter.seek_for_errors(lines, filename))
+        errors.extend(self._space_linter.seek_for_errors(lines, filename))
         return errors
 
     def _get_dialect(self, dialect_filename: str):
