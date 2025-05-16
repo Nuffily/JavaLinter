@@ -44,9 +44,11 @@ class Linter:
             ),
             spaces=SpaceDialect(
                 around_operators=True,
-                around_brackets=True,
+                no_around_brackets=True,
                 after_comma=True,
-                before_comma=True,
+                no_before_comma=True,
+                no_before_dot=True,
+                no_before_dot_comma=True,
                 may_be_more_that_one_space=False
             ),
             empty_lines=EmptyLineCountDialect(
@@ -69,9 +71,11 @@ class Linter:
         spaces_data = data["spaces"]
         spaces = SpaceDialect(
             around_operators=spaces_data["around_operators"],
-            around_brackets=spaces_data["around_brackets"],
+            no_around_brackets=spaces_data["no_around_brackets"],
             after_comma=spaces_data["after_comma"],
-            before_comma=spaces_data["before_comma"],
+            no_before_comma=spaces_data["no_before_comma"],
+            no_around_dot=spaces_data["no_around_dot"],
+            no_before_dot_comma=spaces_data["no_before_dot_comma"],
             may_be_more_that_one_space=bool(spaces_data["may_be_more_that_one_space"])
         )
 

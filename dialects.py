@@ -27,9 +27,11 @@ class EmptyLineCountDialect:
 @dataclass
 class SpaceDialect:
     around_operators: bool
-    around_brackets: bool
+    no_around_brackets: bool
     after_comma: bool
-    before_comma: bool
+    no_before_comma: bool
+    no_before_dot_comma: bool
+    no_around_dot: bool
     may_be_more_that_one_space: bool
 
 @dataclass

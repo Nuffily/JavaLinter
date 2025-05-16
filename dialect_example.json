@@ -7,14 +7,16 @@
   },
   "spaces": {
     "around_operators": true,
-    "around_brackets": true,
+    "no_around_brackets": true,
     "after_comma": true,
-    "before_comma": true,
-    "may_be_more_that_one_space": false
+    "no_before_comma": true,
+    "may_be_more_that_one_space": false,
+    "no_before_dot_comma": true,
+    "no_around_dot": true
   },
   "empty_lines": {
     "max_empty": 2,
-    "after_method": 0,
+    "after_method": 1,
     "after_class": 3
   }
 }
