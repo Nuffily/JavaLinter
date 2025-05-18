@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-
+from typing import NamedTuple
 
 class NamingRule(Enum):
     CAMEL_CASE_CAPITAL = "CAMEL_CASE_CAPITAL"
@@ -8,22 +8,22 @@ class NamingRule(Enum):
     SNAKE_CASE = "SNAKE_CASE"
 
 
-@dataclass
-class NamingDialect:
+
+class NamingDialect(NamedTuple):
     classes: NamingRule
     methods: NamingRule
     variables: NamingRule
 
 
-@dataclass
-class EmptyLineCountDialect:
+
+class EmptyLineCountDialect(NamedTuple):
     max_empty: int
     after_method: int
     after_class: int
 
 
-@dataclass
-class SpaceDialect:
+
+class SpaceDialect(NamedTuple):
     around_operators: bool
     no_around_brackets: bool
     after_comma: bool
@@ -33,8 +33,8 @@ class SpaceDialect:
     may_be_more_that_one_space: bool
 
 
-@dataclass
-class Dialect:
+
+class Dialect(NamedTuple):
     naming: NamingDialect
     spaces: SpaceDialect
     empty_lines: EmptyLineCountDialect

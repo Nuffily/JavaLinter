@@ -1,7 +1,7 @@
 from typing import Any
 
 from java_linter.dialects import Dialect
-from java_linter.shared import JavaPatterns
+from java_linter.shared import JavaPatterns, ErrorEntry
 
 
 class EmptyLineLinter:
@@ -26,7 +26,7 @@ class EmptyLineLinter:
         return errors
 
     def _check_consecutive_empty_lines(self, lines: list[str], filename: str) -> list[Any]:
-        """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
+        """Проверяет, есть ли в поданных строках подряд идущие более чем n пустые строки."""
         errors = []
 
         count = 0
@@ -37,13 +37,13 @@ class EmptyLineLinter:
             else:
                 if count > self._max_empty:
                     errors.append(
-                        {
-                            "file": filename,
-                            "line": i,
-                            "column": 1,
-                            "message": f"Обнаружено {count} последовательных пустых строк, "
-                            f"а должно быть не больше {self._max_empty}",
-                        }
+                        ErrorEntry(
+                            file_name=filename,
+                            line=i,
+                            column=1,
+                            message=f"Обнаружено {count} последовательных пустых строк, "
+                                    f"а должно быть не больше {self._max_empty}"
+                        )
                     )
                 count = 0
 
@@ -64,20 +64,20 @@ class EmptyLineLinter:
                 if not end:
                     continue
 
-                for j, line_2 in enumerate(lines[end + 1 :], start=end + 1):
+                for j, line_2 in enumerate(lines[end + 1:], start=end + 1):
 
                     if line_2.strip() == "":
                         count += 1
                     else:
                         if count != self._after_class:
                             errors.append(
-                                {
-                                    "file": filename,
-                                    "line": end + 2,
-                                    "column": 1,
-                                    "message": f"Обнаружено {count} пустых строк после класса, "
-                                    f"а должно быть {self._after_class}",
-                                }
+                                ErrorEntry(
+                                    file_name=filename,
+                                    line=end + 2,
+                                    column=1,
+                                    message=f"Обнаружено {count} пустых строк после класса, "
+                                            f"а должно быть {self._after_class}",
+                                )
                             )
 
                         count = 0
@@ -102,20 +102,20 @@ class EmptyLineLinter:
 
                 count = 0
 
-                for j, line_2 in enumerate(lines[end + 1 :], start=end + 1):
+                for j, line_2 in enumerate(lines[end + 1:], start=end + 1):
 
                     if line_2.strip() == "":
                         count += 1
                     else:
                         if count != self._after_method:
                             errors.append(
-                                {
-                                    "file": filename,
-                                    "line": end + 2,
-                                    "column": 1,
-                                    "message": f"Обнаружено {count} пустых строк после метода, "
-                                    f"а должно быть {self._after_method}",
-                                }
+                                ErrorEntry(
+                                    file_name=filename,
+                                    line=end + 2,
+                                    column=1,
+                                    message=f"Обнаружено {count} пустых строк после метода, "
+                                            f"а должно быть {self._after_method}",
+                                )
                             )
 
                         break
@@ -126,7 +126,7 @@ class EmptyLineLinter:
 
         open_brackets_count = 1
 
-        for i, line in enumerate(lines[index + 1 :], start=index + 1):
+        for i, line in enumerate(lines[index + 1:], start=index + 1):
             open_brackets_count += line.count("{")
             open_brackets_count -= line.count("}")
 

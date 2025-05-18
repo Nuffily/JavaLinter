@@ -2,7 +2,7 @@ import sys
 from typing import Any
 
 from java_linter.linter import Linter
-
+from java_linter.shared import ErrorEntry
 
 def lint_java_code(filename: str, linter: Linter) -> list[Any]:
     """Выполняет линтинг Java-кода в заданном файле."""
@@ -36,7 +36,7 @@ def main() -> None:
         if errors:
             print(f"Ошибки в файле: {filename}")
             for error in errors:
-                print(f"  Строка: {error['line']}, Столбец: {error['column']}, Проблема: {error['message']}")
+                print(f"  Строка: {error.line}, Столбец: {error.column}, Проблема: {error.message}")
             print("-" * 20)
         else:
             print(f"Проблем не найдено в файле: {filename}")

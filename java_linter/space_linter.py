@@ -2,6 +2,7 @@ import re
 from typing import Any
 
 from java_linter.dialects import Dialect
+from java_linter.shared import ErrorEntry
 
 
 class SpaceLinter:
@@ -51,12 +52,12 @@ class SpaceLinter:
             if "," in line:
                 for match in re.finditer(r",\S", line):
                     errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "После запятой должен быть пробел",
-                        }
+                        ErrorEntry(
+                            file_name=filename,
+                            line=i + 1,
+                            column=match.start() + 1,
+                            message="После запятой должен быть пробел"
+                        )
                     )
 
         return errors
@@ -65,22 +66,23 @@ class SpaceLinter:
 
         errors = []
 
-        spaces_match = re.compile(r".*\S\s\s.*")
+        spaces_match = re.compile(r".*\S\s\s+.*")
 
         for i, line in enumerate(lines):
 
             if spaces_match.match(line):
 
-                for match in re.finditer(r"\S\s\s", line):
+                for match in re.finditer(r"\S\s\s+", line):
 
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "Не должно быть более одного пробела подряд внутри строки",
-                        }
-                    )
+                    if line[match.end()] != '/':
+                        errors.append(
+                            ErrorEntry(
+                                file_name=filename,
+                                line=i + 1,
+                                column=match.start() + 1,
+                                message="Не должно быть более одного пробела подряд внутри строки"
+                            )
+                        )
 
         return errors
 
@@ -92,13 +94,12 @@ class SpaceLinter:
 
             if "," in line:
                 for match in re.finditer(r"\s,", line):
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "Не должно быть пробелов перед запятой",
-                        }
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start() + 1,
+                        message="Не должно быть пробелов перед запятой"
+                    )
                     )
 
         return errors
@@ -111,22 +112,20 @@ class SpaceLinter:
 
             if "." in line:
                 for match in re.finditer(r"\s\.", line):
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "Не должно быть пробелов перед точкой",
-                        }
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start() + 1,
+                        message="Не должно быть пробелов перед точкой"
+                    )
                     )
                 for match in re.finditer(r"\.\s", line):
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "После точки не должен быть пробел",
-                        }
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start() + 1,
+                        message="После точки не должен быть пробел"
+                    )
                     )
 
         return errors
@@ -139,13 +138,12 @@ class SpaceLinter:
 
             if ";" in line:
                 for match in re.finditer(r"\s;", line):
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "Не должно быть пробелов перед точкой с запятой",
-                        }
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start() + 1,
+                        message="Не должно быть пробелов перед точкой с запятой"
+                    )
                     )
 
         return errors
@@ -157,58 +155,54 @@ class SpaceLinter:
         for i, line in enumerate(lines):
 
             if "(" in line:
-                for match in re.finditer(r"([a-zA-Z_]\w+)\s+(\()", line):
-                    if match.group(1) not in ("while", "for", "do"):
-                        errors.append(
-                            {
-                                "file": filename,
-                                "line": i + 1,
-                                "column": match.start(2),
-                                "message": "Перед открывающейся скобкой не должно быть пробела",
-                            }
+                for match in re.finditer(r"(\w+)\s+(\()", line):
+                    if match.group(1) not in ("while", "for", "do", "if", "case", "switch"):
+                        errors.append(ErrorEntry(
+                            file_name=filename,
+                            line=i + 1,
+                            column=match.start(2),
+                            message="Перед открывающейся скобкой не должно быть пробела"
+                        )
                         )
 
-                for match in re.finditer(r"([a-zA-Z_]\w+)\s*(\(\s+)", line):
-                    if match.group(1) not in ("while", "for", "do"):
-                        errors.append(
-                            {
-                                "file": filename,
-                                "line": i + 1,
-                                "column": match.start(2) + 2,
-                                "message": "После открывающейся скобкой не должно быть пробела",
-                            }
-                        )
+                for match in re.finditer(r"(\(\s)", line):
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start(1) + 2,
+                        message="После открывающейся скобкой не должно быть пробела"
+                    )
+                    )
 
             if ")" in line:
                 for match in re.finditer(r"\S\s+(\))", line):
-                    errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start(1),
-                            "message": "Перед закрывающейся скобкой не должно быть пробела",
-                        }
+                    errors.append(ErrorEntry(
+                        file_name=filename,
+                        line=i + 1,
+                        column=match.start(1),
+                        message="Перед закрывающейся скобкой не должно быть пробела"
+                    )
                     )
 
                 for match in re.finditer(r"(\))\w", line):
                     errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start(1),
-                            "message": "После закрывающейся скобки должен быть пробел",
-                        }
+                        ErrorEntry(
+                            file_name=filename,
+                            line=i + 1,
+                            column=match.start(1),
+                            message="После закрывающейся скобки должен быть пробел"
+                        )
                     )
 
             if "{" in line:
                 for match in re.finditer(r"\S{", line):
                     errors.append(
-                        {
-                            "file": filename,
-                            "line": i + 1,
-                            "column": match.start() + 1,
-                            "message": "Перед открывающей фигурной скобкой должен быть пробел",
-                        }
+                        ErrorEntry(
+                            file_name=filename,
+                            line=i + 1,
+                            column=match.start() + 1,
+                            message="Перед открывающей фигурной скобкой должен быть пробел"
+                        )
                     )
 
         return errors
@@ -230,12 +224,12 @@ class SpaceLinter:
                     print(line[start - 1], line[end])
                     if not (line[start - 1].isspace() and line[end].isspace()):
                         errors.append(
-                            {
-                                "file": filename,
-                                "line": i + 1,
-                                "column": start + 1,
-                                "message": "Операторы должны быть окружены пробелами",
-                            }
+                            ErrorEntry(
+                                file_name=filename,
+                                line=i + 1,
+                                column=start + 1,
+                                message="Операторы должны быть окружены пробелами"
+                            )
                         )
 
         return errors

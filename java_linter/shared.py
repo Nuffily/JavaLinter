@@ -1,8 +1,15 @@
 import re
 
+from typing import NamedTuple
+
+
+class ErrorEntry(NamedTuple):
+    file_name: str
+    line: int
+    column: int
+    message: str
 
 class JavaPatterns:
-
     CLASS_PATTERN = re.compile(
         r"""
         ^\s*
