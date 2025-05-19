@@ -133,13 +133,16 @@ class NamingLinter:
 
     def _check_var_names(self, lines: list[str], filename: str) -> list[Any]:
         errors: list[ErrorEntry] = []
+        print("123")
 
         for i, line in enumerate(lines):
-
+            print(line)
             variable_declaration_match = JavaPatterns.VAR_PATTERN.search(line)
             if variable_declaration_match:
 
                 variable_name = variable_declaration_match.group(2)
+
+                print(variable_declaration_match.group(1), variable_declaration_match.group(2))
 
                 if variable_declaration_match.group(1) not in (
                         "class",

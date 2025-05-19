@@ -9,7 +9,7 @@ from java_linter.space_linter import SpaceLinter
 
 class Linter:
 
-    def __init__(self, dialect_filename: str):
+    def __init__(self, dialect_filename = ""):
         self._dialect = self._get_dialect(dialect_filename)
         self._naming_linter = NamingLinter(self._dialect)
         self._empty_line_linter = EmptyLineLinter(self._dialect)
@@ -23,6 +23,9 @@ class Linter:
         return errors
 
     def _get_dialect(self, dialect_filename: str) -> Dialect:
+        if not dialect_filename:
+            return self._get_default_dialect()
+
         try:
             with open(dialect_filename, "r", encoding="utf-8") as file:
                 data = json.load(file)

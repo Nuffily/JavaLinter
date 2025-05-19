@@ -9,6 +9,7 @@ class ErrorEntry(NamedTuple):
     column: int
     message: str
 
+
 class JavaPatterns:
     CLASS_PATTERN = re.compile(
         r"""
@@ -27,27 +28,26 @@ class JavaPatterns:
 
     VAR_PATTERN = re.compile(
         r"""
-                            ^\s*                                  # Начало строки
-                    (?:                                  # Группа для модификаторов
-                        (?:public|private|protected|
-                        static|final|
-                        synchronized|abstract|default)
-                        \s+                             # Пробелы после модификатора
-                    )*                                 # Ноль или более модификаторов
-                    \b(                                   # Группа для типа (захватывающая)
-                        (?!public|private|protected|    # Запрет на модификаторы
-                        static|final|                   # в качестве типа
-                        synchronized|abstract|default)  #
-                        \w+                            # Базовый тип
-                        (?:\s*<[^>]+>)?                # Дженерик часть (опционально)
-                        (?:\s*\[\s*\])*                # Массив (опционально, многомерный)
-                        \s*                            # Пробелы после типа
-                    )\b
-                    \s+
-                    \b([a-zA-Z_]\w*)\b                     # Имя метода (захватывающая группа)
-                    \s*                                # Пробелы
-                    (?!\()                                 # Открывающая скобка
-                    """,
+                    ^\s*
+            (?:
+                (?:public|private|protected|
+                static|final|
+                synchronized|abstract|default|volatile)
+                \s+
+            )*
+            (
+                (?!public|private|protected|
+                static|final|
+                synchronized|abstract|default|volatile)
+                \w+
+                (?:\s*<.+>)*
+                (?:\s*\[.*])*
+            )
+            \s+
+            \b([a-zA-Z_]\w*)\b
+            \s*
+            (?!\()
+            """,
         re.VERBOSE,
     )
 
