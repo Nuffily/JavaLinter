@@ -15,8 +15,8 @@
     "no_around_dot": true
   },
   "empty_lines": {
-    "max_empty": 2,
+    "max_empty": 3,
     "after_method": 1,
-    "after_class": 3
+    "after_class": 2
   }
 }

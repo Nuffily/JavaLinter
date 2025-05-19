@@ -1,3 +1,4 @@
+import re
 from typing import Any
 
 from java_linter.dialects import Dialect
@@ -42,10 +43,21 @@ class EmptyLineLinter:
                             line=i,
                             column=1,
                             message=f"Обнаружено {count} последовательных пустых строк, "
-                                    f"а должно быть не больше {self._max_empty}"
+                            f"а должно быть не больше {self._max_empty}",
                         )
                     )
                 count = 0
+
+        if count > self._max_empty:
+            errors.append(
+                ErrorEntry(
+                    file_name=filename,
+                    line=len(lines),
+                    column=1,
+                    message=f"Обнаружено {count} последовательных пустых строк, "
+                    f"а должно быть не больше {self._max_empty}",
+                )
+            )
 
         return errors
 
@@ -64,7 +76,7 @@ class EmptyLineLinter:
                 if not end:
                     continue
 
-                for j, line_2 in enumerate(lines[end + 1:], start=end + 1):
+                for j, line_2 in enumerate(lines[end + 1 :], start=end + 1):
 
                     if line_2.strip() == "":
                         count += 1
@@ -76,11 +88,11 @@ class EmptyLineLinter:
                                     line=end + 2,
                                     column=1,
                                     message=f"Обнаружено {count} пустых строк после класса, "
-                                            f"а должно быть {self._after_class}",
+                                    f"а должно быть {self._after_class}",
                                 )
                             )
 
-                        count = 0
+                        break
 
         return errors
 
@@ -90,19 +102,26 @@ class EmptyLineLinter:
 
         for i, line in enumerate(lines):
 
-            if JavaPatterns.METHOD_PATTERN.match(line):
+            if JavaPatterns.METHOD_PATTERN.match(line) and not re.match(r"^\s*return", line):
 
-                if "{" in line:
+                if "{" in line and "}" in line:
+                    end = i
+
+                elif "{" in line:
                     end = self._look_for_end(lines, i)
 
                     if not end:
                         continue
+
+                elif ";" in line:
+                    end = i
+
                 else:
                     end = i + 1
 
                 count = 0
 
-                for j, line_2 in enumerate(lines[end + 1:], start=end + 1):
+                for j, line_2 in enumerate(lines[end + 1 :], start=end + 1):
 
                     if line_2.strip() == "":
                         count += 1
@@ -114,7 +133,7 @@ class EmptyLineLinter:
                                     line=end + 2,
                                     column=1,
                                     message=f"Обнаружено {count} пустых строк после метода, "
-                                            f"а должно быть {self._after_method}",
+                                    f"а должно быть {self._after_method}",
                                 )
                             )
 
@@ -126,7 +145,7 @@ class EmptyLineLinter:
 
         open_brackets_count = 1
 
-        for i, line in enumerate(lines[index + 1:], start=index + 1):
+        for i, line in enumerate(lines[index + 1 :], start=index + 1):
             open_brackets_count += line.count("{")
             open_brackets_count -= line.count("}")
 

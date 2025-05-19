@@ -1,10 +1,10 @@
 import sys
-from typing import Any
 
 from java_linter.linter import Linter
 from java_linter.shared import ErrorEntry
 
-def lint_java_code(filename: str, linter: Linter) -> list[Any]:
+
+def lint_java_code(filename: str, linter: Linter) -> list[ErrorEntry]:
     """Выполняет линтинг Java-кода в заданном файле."""
     try:
         with open(filename, "r") as f:

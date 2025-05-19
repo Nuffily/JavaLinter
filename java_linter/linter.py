@@ -4,18 +4,24 @@ from typing import Any
 from java_linter.dialects import Dialect, EmptyLineCountDialect, NamingDialect, NamingRule, SpaceDialect
 from java_linter.empty_lines_liner import EmptyLineLinter
 from java_linter.naming_linter import NamingLinter
+from java_linter.shared import ErrorEntry
 from java_linter.space_linter import SpaceLinter
 
 
 class Linter:
+    """Джава линтер, который ищет ошибки в поданном файле, основываясь на стиле кода, указанном в Dialect"""
 
-    def __init__(self, dialect_filename = ""):
-        self._dialect = self._get_dialect(dialect_filename)
+    def __init__(self, dialect_filename="", dialect: Dialect | None = None):
+        """При отсутствии dialect_filename использует свой базовый"""
+
+        self._dialect = dialect if dialect else self._get_dialect(dialect_filename)
+
         self._naming_linter = NamingLinter(self._dialect)
         self._empty_line_linter = EmptyLineLinter(self._dialect)
         self._space_linter = SpaceLinter(self._dialect)
 
-    def seek_for_errors(self, lines: list[str], filename: str) -> list[Any]:
+    def seek_for_errors(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Использует seek_for_errors в каждом подлинтере и возвращает объединение их результатов"""
         errors = []
         errors.extend(self._naming_linter.seek_for_errors(lines, filename))
         errors.extend(self._empty_line_linter.seek_for_errors(lines, filename))
@@ -23,6 +29,10 @@ class Linter:
         return errors
 
     def _get_dialect(self, dialect_filename: str) -> Dialect:
+        """
+        Возвращает экземпляр Dialect из json'а по заданному пути или из _get_default_dialect если прочтение не удалось
+        """
+
         if not dialect_filename:
             return self._get_default_dialect()
 
@@ -39,6 +49,7 @@ class Linter:
             return self._get_default_dialect()
 
     def _get_default_dialect(self) -> Dialect:
+        """Возвращает Dialect с базовыми значениями"""
         return Dialect(
             naming=NamingDialect(
                 classes=NamingRule.CAMEL_CASE_CAPITAL,
@@ -54,10 +65,11 @@ class Linter:
                 no_before_dot_comma=True,
                 may_be_more_that_one_space=False,
             ),
-            empty_lines=EmptyLineCountDialect(max_empty=2, after_method=2, after_class=3),
+            empty_lines=EmptyLineCountDialect(max_empty=3, after_method=1, after_class=2),
         )
 
     def _json_to_dialect(self, data: dict[str, Any]) -> Dialect:
+        """Собирает экземпляр Dialect из полученного json'а-словаря"""
 
         naming_data = data["naming"]
         naming = NamingDialect(

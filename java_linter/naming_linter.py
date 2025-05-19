@@ -47,7 +47,7 @@ class NamingLinter:
                                 file_name=filename,
                                 line=i + 1,
                                 column=class_name_match.start(1) + 1,
-                                message="Имена классов не должны быть в snake_case"
+                                message="Имена классов не должны быть в snake_case",
                             )
                         )
 
@@ -58,7 +58,7 @@ class NamingLinter:
                                 file_name=filename,
                                 line=i + 1,
                                 column=class_name_match.start(1) + 1,
-                                message="Имена классов должны начинаться с заглавной буквы"
+                                message="Имена классов должны начинаться с заглавной буквы",
                             )
                         )
 
@@ -69,7 +69,7 @@ class NamingLinter:
                                 file_name=filename,
                                 line=i + 1,
                                 column=class_name_match.start(1) + 1,
-                                message="Имена классов должны начинаться со строчной буквы"
+                                message="Имена классов должны начинаться со строчной буквы",
                             )
                         )
 
@@ -103,7 +103,7 @@ class NamingLinter:
                                 file_name=filename,
                                 line=i + 1,
                                 column=method_name_match.start(2) + 1,
-                                message="Имена методов не должны быть в snake_case"
+                                message="Имена методов не должны быть в snake_case",
                             )
                         )
 
@@ -114,7 +114,7 @@ class NamingLinter:
                                 file_name=filename,
                                 line=i + 1,
                                 column=method_name_match.start(2) + 1,
-                                message="Имена методов должны начинаться с заглавной буквы"
+                                message="Имена методов должны начинаться с заглавной буквы",
                             )
                         )
 
@@ -133,27 +133,24 @@ class NamingLinter:
 
     def _check_var_names(self, lines: list[str], filename: str) -> list[Any]:
         errors: list[ErrorEntry] = []
-        print("123")
 
         for i, line in enumerate(lines):
-            print(line)
+
             variable_declaration_match = JavaPatterns.VAR_PATTERN.search(line)
             if variable_declaration_match:
 
                 variable_name = variable_declaration_match.group(2)
 
-                print(variable_declaration_match.group(1), variable_declaration_match.group(2))
-
                 if variable_declaration_match.group(1) not in (
-                        "class",
-                        "return",
-                        "for",
-                        "switch",
-                        "case",
-                        "if",
-                        "extends",
-                        "import",
-                        "package",
+                    "class",
+                    "return",
+                    "for",
+                    "switch",
+                    "case",
+                    "if",
+                    "extends",
+                    "import",
+                    "package",
                 ):
 
                     if self._var_dialect == NamingRule.SNAKE_CASE:
@@ -163,7 +160,7 @@ class NamingLinter:
                                     file_name=filename,
                                     line=i + 1,
                                     column=variable_declaration_match.start(2) + 1,
-                                    message="Имена переменных должны быть в snake_case"
+                                    message="Имена переменных должны быть в snake_case",
                                 )
                             )
 
@@ -174,7 +171,7 @@ class NamingLinter:
                                     file_name=filename,
                                     line=i + 1,
                                     column=variable_declaration_match.start(2) + 1,
-                                    message="Имена переменных не должны быть в snake_case"
+                                    message="Имена переменных не должны быть в snake_case",
                                 )
                             )
 
@@ -185,7 +182,7 @@ class NamingLinter:
                                     file_name=filename,
                                     line=i + 1,
                                     column=variable_declaration_match.start(2) + 1,
-                                    message="Имена переменных должны начинаться с заглавной буквы"
+                                    message="Имена переменных должны начинаться с заглавной буквы",
                                 )
                             )
 
@@ -197,22 +194,14 @@ class NamingLinter:
                                     file_name=filename,
                                     line=i + 1,
                                     column=variable_declaration_match.start(2) + 1,
-                                    message="Имена переменных должны начинаться со строчной буквы"
+                                    message="Имена переменных должны начинаться со строчной буквы",
                                 )
                             )
 
         return errors
 
     def _check_is_snake_case(self, name: str) -> bool:
-        """
-        Проверяет, соответствует ли имя класса соглашению snake_case
-
-        Args:
-            name (str): Имя класса для проверки (без слова 'class' и двоеточия)
-
-        Returns:
-            bool: True если имя валидно, False если нет
-        """
+        """Проверяет, соответствует ли имя класса соглашению snake_case"""
         name = name.strip()
 
         if not re.fullmatch(r"^[a-z][a-z0-9_]*[a-z0-9]$", name):
@@ -220,10 +209,5 @@ class NamingLinter:
 
         if "__" in name:
             return False
-
-        parts = name.split("_")
-        for part in parts[1:]:
-            if not part or not part[0].isalpha():
-                return False
 
         return True
