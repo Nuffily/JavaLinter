@@ -24,8 +24,9 @@ def lint_java_code(filename: str, linter: Linter) -> list[ErrorEntry]:
 def main() -> None:
     """Главная функция для запуска линтера."""
 
-    if len(sys.argv) < 3:
-        print("Использование: python java_linter.py <java_file1> <java_file2> ...")
+    if len(sys.argv) < 3 or sys.argv[1] in ("help", "-h", "--h", "--help", "-help"):
+        print("Использование: python main.py <Файл со стилем.json> <java_file1> <java_file2> ...")
+        print("Описание файла стиля есть в README.md")
         sys.exit(1)
 
     for filename in sys.argv[2:]:

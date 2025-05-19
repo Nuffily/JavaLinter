@@ -1,9 +1,10 @@
 import re
-
 from typing import NamedTuple
 
 
 class ErrorEntry(NamedTuple):
+    """Запись найденной линтером ошибки"""
+
     file_name: str
     line: int
     column: int
@@ -11,6 +12,8 @@ class ErrorEntry(NamedTuple):
 
 
 class JavaPatterns:
+    """Регулярные выражения для поиска классов/методов/переменных в java-коде"""
+
     CLASS_PATTERN = re.compile(
         r"""
         ^\s*

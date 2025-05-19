@@ -1,6 +1,6 @@
 import pytest
 
-from java_linter.dialects import Dialect, NamingDialect, SpaceDialect, NamingRule, EmptyLineCountDialect
+from java_linter.dialects import Dialect, EmptyLineCountDialect, NamingDialect, NamingRule, SpaceDialect
 from java_linter.empty_lines_liner import EmptyLineLinter
 from java_linter.shared import ErrorEntry
 
@@ -8,7 +8,7 @@ from java_linter.shared import ErrorEntry
 class TestEmptyLineLinter:
 
     @pytest.fixture
-    def dialect(self, after_class=3, after_method=2, max_empty=3) -> Dialect:
+    def dialect(self, after_class: int = 3, after_method: int = 2, max_empty: int = 3) -> Dialect:
         return Dialect(
             naming=NamingDialect(
                 classes=NamingRule.CAMEL_CASE_CAPITAL,
@@ -28,47 +28,47 @@ class TestEmptyLineLinter:
         )
 
     @pytest.fixture
-    def linter(self, dialect) -> EmptyLineLinter:
+    def linter(self, dialect: Dialect) -> EmptyLineLinter:
         return EmptyLineLinter(dialect)
 
     @pytest.mark.parametrize(
         "lines,max_empty,expected_errors",
         [
             (
-                    ["line1", "", "", "", "line2"],
-                    2,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=4,
-                            column=1,
-                            message="Обнаружено 3 последовательных пустых строк, а должно быть не больше 2",
-                        )
-                    ],
+                ["line1", "", "", "", "line2"],
+                2,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=4,
+                        column=1,
+                        message="Обнаружено 3 последовательных пустых строк, а должно быть не больше 2",
+                    )
+                ],
             ),
             (
-                    ["some1", "", "", "", "", "some2"],
-                    2,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=5,
-                            column=1,
-                            message="Обнаружено 4 последовательных пустых строк, а должно быть не больше 2",
-                        )
-                    ],
+                ["some1", "", "", "", "", "some2"],
+                2,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=5,
+                        column=1,
+                        message="Обнаружено 4 последовательных пустых строк, а должно быть не больше 2",
+                    )
+                ],
             ),
             (
-                    ["", "", ""],
-                    1,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=3,
-                            column=1,
-                            message="Обнаружено 3 последовательных пустых строк, а должно быть не больше 1",
-                        )
-                    ],
+                ["", "", ""],
+                1,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=3,
+                        column=1,
+                        message="Обнаружено 3 последовательных пустых строк, а должно быть не больше 1",
+                    )
+                ],
             ),
             ([], 2, []),
             (["str1", "", "str2"], 2, []),
@@ -76,7 +76,7 @@ class TestEmptyLineLinter:
         ],
     )
     def test_check_consecutive_empty_lines(
-            self, linter: EmptyLineLinter, lines: list[str], max_empty: int, expected_errors: list[ErrorEntry]
+        self, linter: EmptyLineLinter, lines: list[str], max_empty: int, expected_errors: list[ErrorEntry]
     ) -> None:
         linter._max_empty = max_empty
 
@@ -92,40 +92,40 @@ class TestEmptyLineLinter:
         [
             (["class MyClass {", "}", "", "", "", "line"], 3, []),
             (
-                    ["class SomeClass {", "}", "", "", "line"],
-                    3,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=3,
-                            column=1,
-                            message="Обнаружено 2 пустых строк после класса, а должно быть 3",
-                        )
-                    ],
+                ["class SomeClass {", "}", "", "", "line"],
+                3,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=3,
+                        column=1,
+                        message="Обнаружено 2 пустых строк после класса, а должно быть 3",
+                    )
+                ],
             ),
             (
-                    ["enum AgainEnum {", "}", "nothing"],
-                    3,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=3,
-                            column=1,
-                            message="Обнаружено 0 пустых строк после класса, а должно быть 3",
-                        )
-                    ],
+                ["enum AgainEnum {", "}", "nothing"],
+                3,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=3,
+                        column=1,
+                        message="Обнаружено 0 пустых строк после класса, а должно быть 3",
+                    )
+                ],
             ),
             (
-                    ["abstract interface MyInt {", "{", "}", "}", "", "", "", "", "line"],
-                    3,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=5,
-                            column=1,
-                            message="Обнаружено 4 пустых строк после класса, а должно быть 3",
-                        )
-                    ],
+                ["abstract interface MyInt {", "{", "}", "}", "", "", "", "", "line"],
+                3,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=5,
+                        column=1,
+                        message="Обнаружено 4 пустых строк после класса, а должно быть 3",
+                    )
+                ],
             ),
             (["class MyClass {}"], 3, []),
             (["interface MyInterface {}"], 3, []),
@@ -134,7 +134,7 @@ class TestEmptyLineLinter:
         ],
     )
     def test_check_empty_lines_after_class(
-            self, linter: EmptyLineLinter, lines: list[str], after_class: int, expected_errors: list[ErrorEntry]
+        self, linter: EmptyLineLinter, lines: list[str], after_class: int, expected_errors: list[ErrorEntry]
     ) -> None:
         linter._after_class = after_class
 
@@ -150,59 +150,59 @@ class TestEmptyLineLinter:
         [
             (["void method() {", "}", "", "", "a"], 2, []),
             (
-                    ["int calc(qweqw qtrrwet) {", "}", "", "a"],
-                    2,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=3,
-                            column=1,
-                            message="Обнаружено 1 пустых строк после метода, а должно быть 2",
-                        )
-                    ],
+                ["int calc(qweqw qtrrwet) {", "}", "", "a"],
+                2,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=3,
+                        column=1,
+                        message="Обнаружено 1 пустых строк после метода, а должно быть 2",
+                    )
+                ],
             ),
             (
-                    ["void method() {", "}", "", "", "anotherMethod() {}"],
-                    3,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=3,
-                            column=1,
-                            message="Обнаружено 2 пустых строк после метода, а должно быть 3",
-                        )
-                    ],
+                ["void method() {", "}", "", "", "anotherMethod() {}"],
+                3,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=3,
+                        column=1,
+                        message="Обнаружено 2 пустых строк после метода, а должно быть 3",
+                    )
+                ],
             ),
             (["void method() {", "some code lol", "}", "", "", "anotherMethod() {", "}"], 2, []),
             (["void method() {}"], 2, []),
             (
-                    ["int get() { return 1; }", "", "qwe"],
-                    2,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=2,
-                            column=1,
-                            message="Обнаружено 1 пустых строк после метода, а должно быть 2",
-                        )
-                    ],
+                ["int get() { return 1; }", "", "qwe"],
+                2,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=2,
+                        column=1,
+                        message="Обнаружено 1 пустых строк после метода, а должно быть 2",
+                    )
+                ],
             ),
             (
-                    ["void method() return nothing literally;", "", "", "", "class MyClass {}"],
-                    2,
-                    [
-                        ErrorEntry(
-                            file_name="test.java",
-                            line=2,
-                            column=1,
-                            message="Обнаружено 3 пустых строк после метода, а должно быть 2",
-                        )
-                    ],
+                ["void method() return nothing literally;", "", "", "", "class MyClass {}"],
+                2,
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=2,
+                        column=1,
+                        message="Обнаружено 3 пустых строк после метода, а должно быть 2",
+                    )
+                ],
             ),
         ],
     )
     def test_check_empty_lines_after_method(
-            self, linter: EmptyLineLinter, lines: list[str], after_method: int, expected_errors: list[ErrorEntry]
+        self, linter: EmptyLineLinter, lines: list[str], after_method: int, expected_errors: list[ErrorEntry]
     ) -> None:
 
         linter._after_method = after_method
@@ -214,7 +214,7 @@ class TestEmptyLineLinter:
         for expected in expected_errors:
             assert expected in errors
 
-    def test_seek_for_errors(self, linter: EmptyLineLinter):
+    def test_seek_for_errors(self, linter: EmptyLineLinter) -> None:
 
         lines = [
             "interface MyClass {",
@@ -258,8 +258,7 @@ class TestEmptyLineLinter:
                 message="Обнаружено 3 пустых строк после метода, а должно быть 2",
             ),
         ]
-        print(errors)
-        print(errors)
+
         assert len(errors) == len(expected_errors)
 
         for expected in expected_errors:

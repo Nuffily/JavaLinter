@@ -1,25 +1,28 @@
 import re
-from typing import Any
 
 from java_linter.dialects import Dialect, NamingRule
-from java_linter.shared import JavaPatterns, ErrorEntry
+from java_linter.shared import ErrorEntry, JavaPatterns
 
 
 class NamingLinter:
+    """Класс, ищущий синтаксические ошибки в .java файлах, связанные с неймингом идентификаторов"""
 
     def __init__(self, dialect: Dialect):
         self._class_dialect = dialect.naming.classes
         self._method_dialect = dialect.naming.methods
         self._var_dialect = dialect.naming.variables
 
-    def seek_for_errors(self, lines: list[str], filename: str) -> list[Any]:
+    def seek_for_errors(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Ищет ошибки в java файле и выдает их в виде списка ErrorEntry"""
         errors: list[ErrorEntry] = []
         errors.extend(self._check_class_names(lines, filename))
         errors.extend(self._check_method_names(lines, filename))
         errors.extend(self._check_var_names(lines, filename))
         return errors
 
-    def _check_class_names(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_class_names(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, правильно ли называются все классы"""
+
         errors: list[ErrorEntry] = []
 
         for i, line in enumerate(lines):
@@ -75,7 +78,8 @@ class NamingLinter:
 
         return errors
 
-    def _check_method_names(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_method_names(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, правильно ли называются все методы"""
         errors: list[ErrorEntry] = []
 
         for i, line in enumerate(lines):
@@ -131,7 +135,9 @@ class NamingLinter:
 
         return errors
 
-    def _check_var_names(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_var_names(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, правильно ли называются все переменные"""
+
         errors: list[ErrorEntry] = []
 
         for i, line in enumerate(lines):

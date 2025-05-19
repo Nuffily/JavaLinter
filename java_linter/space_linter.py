@@ -1,11 +1,11 @@
 import re
-from typing import Any
 
 from java_linter.dialects import Dialect
 from java_linter.shared import ErrorEntry
 
 
 class SpaceLinter:
+    """Класс, ищущий синтаксические ошибки в .java файлах, связанные с пробелами"""
 
     def __init__(self, dialect: Dialect):
         self._after_comma = dialect.spaces.after_comma
@@ -17,7 +17,8 @@ class SpaceLinter:
         self._no_before_dot_comma = dialect.spaces.no_before_dot_comma
         self._no_around_dot = dialect.spaces.no_around_dot
 
-    def seek_for_errors(self, lines: list[str], filename: str) -> list[Any]:
+    def seek_for_errors(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Ищет ошибки в java файле и выдает их в виде списка ErrorEntry"""
         errors = []
 
         if self._after_comma:
@@ -43,7 +44,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_spaces_after_comma(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_spaces_after_comma(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, есть ли пробел после каждой запятой"""
 
         errors = []
 
@@ -62,7 +64,8 @@ class SpaceLinter:
 
         return errors
 
-    def check_no_spaces_more_that_one(self, lines: list[str], filename: str) -> list[Any]:
+    def check_no_spaces_more_that_one(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, нет ли где-либо двух пробелов подряд"""
 
         errors = []
 
@@ -86,7 +89,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_no_spaces_before_comma(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_no_spaces_before_comma(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, нет ли пробелов перед запятыми"""
 
         errors = []
 
@@ -105,7 +109,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_no_spaces_around_dot(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_no_spaces_around_dot(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, нет ли пробелов перед точками"""
 
         errors = []
 
@@ -133,7 +138,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_no_spaces_before_dot_comma(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_no_spaces_before_dot_comma(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, нет ли пробелов перед точками с запятой"""
 
         errors = []
 
@@ -152,7 +158,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_no_spaces_around_brackets(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_no_spaces_around_brackets(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, не окружены ли все скобки пробелами"""
 
         errors = []
 
@@ -214,7 +221,8 @@ class SpaceLinter:
 
         return errors
 
-    def _check_no_spaces_around_operators(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_no_spaces_around_operators(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, окружен ли каждый оператор пробелами"""
 
         errors = []
 

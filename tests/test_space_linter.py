@@ -1,8 +1,8 @@
 import pytest
 
-from java_linter.dialects import Dialect, NamingDialect, SpaceDialect, NamingRule, EmptyLineCountDialect
-from java_linter.space_linter import SpaceLinter
+from java_linter.dialects import Dialect, EmptyLineCountDialect, NamingDialect, NamingRule, SpaceDialect
 from java_linter.shared import ErrorEntry
+from java_linter.space_linter import SpaceLinter
 
 
 class TestSpaceLinter:
@@ -28,7 +28,7 @@ class TestSpaceLinter:
         )
 
     @pytest.fixture
-    def linter(self, dialect) -> SpaceLinter:
+    def linter(self, dialect: Dialect) -> SpaceLinter:
         return SpaceLinter(dialect)
 
     @pytest.mark.parametrize(
@@ -41,8 +41,14 @@ class TestSpaceLinter:
                     ErrorEntry(file_name="test.java", line=1, column=8, message="После запятой должен быть пробел"),
                 ],
             ),
-            ("String s1,s2", [ErrorEntry(file_name="test.java", line=1, column=10, message="После запятой должен быть пробел")]),
-            ("Map<String,Integer> map", [ErrorEntry(file_name="test.java", line=1, column=11, message="После запятой должен быть пробел")]),
+            (
+                "String s1,s2",
+                [ErrorEntry(file_name="test.java", line=1, column=10, message="После запятой должен быть пробел")],
+            ),
+            (
+                "Map<String,Integer> map",
+                [ErrorEntry(file_name="test.java", line=1, column=11, message="После запятой должен быть пробел")],
+            ),
             ("int x, y, z", []),  # Корректный код - без ошибок
             (
                 "call(a,b,c)",
@@ -64,19 +70,31 @@ class TestSpaceLinter:
     @pytest.mark.parametrize(
         "line,expected_errors",
         [
-            ("int a ,b", [ErrorEntry(file_name="test.java", line=1, column=6, message="Не должно быть пробелов перед запятой")]),
-            ("String s , t", [ErrorEntry(file_name="test.java", line=1, column=9, message="Не должно быть пробелов перед запятой")]),
+            (
+                "int a ,b",
+                [ErrorEntry(file_name="test.java", line=1, column=6, message="Не должно быть пробелов перед запятой")],
+            ),
+            (
+                "String s , t",
+                [ErrorEntry(file_name="test.java", line=1, column=9, message="Не должно быть пробелов перед запятой")],
+            ),
             ("int x,y", []),
             (
                 "List< String , Integer , Type>",
                 [
-                    ErrorEntry(file_name="test.java", line=1, column=13, message="Не должно быть пробелов перед запятой"),
-                    ErrorEntry(file_name="test.java", line=1, column=23, message="Не должно быть пробелов перед запятой"),
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=13, message="Не должно быть пробелов перед запятой"
+                    ),
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=23, message="Не должно быть пробелов перед запятой"
+                    ),
                 ],
             ),
         ],
     )
-    def test_check_no_spaces_before_comma(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_before_comma(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter._check_no_spaces_before_comma([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -87,8 +105,14 @@ class TestSpaceLinter:
     @pytest.mark.parametrize(
         "line,expected_errors",
         [
-            ("obj .method()", [ErrorEntry(file_name="test.java", line=1, column=4, message="Не должно быть пробелов перед точкой")]),
-            ("obj. method()", [ErrorEntry(file_name="test.java", line=1, column=4, message="После точки не должен быть пробел")]),
+            (
+                "obj .method()",
+                [ErrorEntry(file_name="test.java", line=1, column=4, message="Не должно быть пробелов перед точкой")],
+            ),
+            (
+                "obj. method()",
+                [ErrorEntry(file_name="test.java", line=1, column=4, message="После точки не должен быть пробел")],
+            ),
             (
                 "obj . method()",
                 [
@@ -97,10 +121,15 @@ class TestSpaceLinter:
                 ],
             ),
             ("obj.method()", []),
-            ("some.obj .field", [ErrorEntry(file_name="test.java", line=1, column=9, message="Не должно быть пробелов перед точкой")]),
+            (
+                "some.obj .field",
+                [ErrorEntry(file_name="test.java", line=1, column=9, message="Не должно быть пробелов перед точкой")],
+            ),
         ],
     )
-    def test_check_no_spaces_around_dot(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_around_dot(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter._check_no_spaces_around_dot([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -111,12 +140,34 @@ class TestSpaceLinter:
     @pytest.mark.parametrize(
         "line,expected_errors",
         [
-            ("int x ;", [ErrorEntry(file_name="test.java", line=1, column=6, message="Не должно быть пробелов перед точкой с запятой")]),
-            ("lol (;; ) ;", [ErrorEntry(file_name="test.java", line=1, column=10, message="Не должно быть пробелов перед точкой с запятой")]),
+            (
+                "int x ;",
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=6,
+                        message="Не должно быть пробелов перед точкой с запятой",
+                    )
+                ],
+            ),
+            (
+                "lol (;; ) ;",
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=10,
+                        message="Не должно быть пробелов перед точкой с запятой",
+                    )
+                ],
+            ),
             ("int x;", []),
         ],
     )
-    def test_check_no_spaces_before_dot_comma(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_before_dot_comma(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter._check_no_spaces_before_dot_comma([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -129,36 +180,95 @@ class TestSpaceLinter:
         [
             (
                 "method (arg)",
-                [ErrorEntry(file_name="test.java", line=1, column=7, message="Перед открывающейся скобкой не должно быть пробела")],
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=7,
+                        message="Перед открывающейся скобкой не должно быть пробела",
+                    )
+                ],
             ),
             (
                 "method( arg )",
                 [
-                    ErrorEntry(file_name="test.java", line=1, column=8, message="После открывающейся скобкой не должно быть пробела"),
-                    ErrorEntry(file_name="test.java", line=1, column=12, message="Перед закрывающейся скобкой не должно быть пробела"),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=8,
+                        message="После открывающейся скобкой не должно быть пробела",
+                    ),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=12,
+                        message="Перед закрывающейся скобкой не должно быть пробела",
+                    ),
                 ],
             ),
             (
                 "if ( condition ) {",
                 [
-                    ErrorEntry(file_name="test.java", line=1, column=5, message="После открывающейся скобкой не должно быть пробела"),
-                    ErrorEntry(file_name="test.java", line=1, column=15, message="Перед закрывающейся скобкой не должно быть пробела"),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=5,
+                        message="После открывающейся скобкой не должно быть пробела",
+                    ),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=15,
+                        message="Перед закрывающейся скобкой не должно быть пробела",
+                    ),
                 ],
             ),
-            ("(qwe )", [ErrorEntry(file_name="test.java", line=1, column=5, message="Перед закрывающейся скобкой не должно быть пробела")]),
-            ("( asd)", [ErrorEntry(file_name="test.java", line=1, column=2, message="После открывающейся скобкой не должно быть пробела")]),
+            (
+                "(qwe )",
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=5,
+                        message="Перед закрывающейся скобкой не должно быть пробела",
+                    )
+                ],
+            ),
+            (
+                "( asd)",
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=2,
+                        message="После открывающейся скобкой не должно быть пробела",
+                    )
+                ],
+            ),
             (
                 "( zxc )",
                 [
-                    ErrorEntry(file_name="test.java", line=1, column=2, message="После открывающейся скобкой не должно быть пробела"),
-                    ErrorEntry(file_name="test.java", line=1, column=6, message="Перед закрывающейся скобкой не должно быть пробела"),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=2,
+                        message="После открывающейся скобкой не должно быть пробела",
+                    ),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=6,
+                        message="Перед закрывающейся скобкой не должно быть пробела",
+                    ),
                 ],
             ),
             ("for (i = 0; i < 10; i++)", []),
             ("method()", []),
         ],
     )
-    def test_check_no_spaces_around_brackets(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_around_brackets(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter._check_no_spaces_around_brackets([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -169,15 +279,45 @@ class TestSpaceLinter:
     @pytest.mark.parametrize(
         "line,expected_errors",
         [
-            ("x=5", [ErrorEntry(file_name="test.java", line=1, column=2, message="Операторы должны быть окружены пробелами")]),
-            ("y ==2", [ErrorEntry(file_name="test.java", line=1, column=3, message="Операторы должны быть окружены пробелами")]),
-            ("z* 3", [ErrorEntry(file_name="test.java", line=1, column=2, message="Операторы должны быть окружены пробелами")]),
-            ("a +b", [ErrorEntry(file_name="test.java", line=1, column=3, message="Операторы должны быть окружены пробелами")]),
+            (
+                "x=5",
+                [
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=2, message="Операторы должны быть окружены пробелами"
+                    )
+                ],
+            ),
+            (
+                "y ==2",
+                [
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=3, message="Операторы должны быть окружены пробелами"
+                    )
+                ],
+            ),
+            (
+                "z* 3",
+                [
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=2, message="Операторы должны быть окружены пробелами"
+                    )
+                ],
+            ),
+            (
+                "a +b",
+                [
+                    ErrorEntry(
+                        file_name="test.java", line=1, column=3, message="Операторы должны быть окружены пробелами"
+                    )
+                ],
+            ),
             ("x + y", []),
             ("python = cool", []),
         ],
     )
-    def test_check_no_spaces_around_operators(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_around_operators(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter._check_no_spaces_around_operators([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -190,29 +330,67 @@ class TestSpaceLinter:
         [
             (
                 "int  x = 5",
-                [ErrorEntry(file_name="test.java", line=1, column=3, message="Не должно быть более одного пробела подряд внутри строки")],
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=3,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    )
+                ],
             ),
             (
                 'String  s = "test"',
-                [ErrorEntry(file_name="test.java", line=1, column=6, message="Не должно быть более одного пробела подряд внутри строки")],
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=6,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    )
+                ],
             ),
             (
                 "public   class Main",
-                [ErrorEntry(file_name="test.java", line=1, column=6, message="Не должно быть более одного пробела подряд внутри строки")],
+                [
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=6,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    )
+                ],
             ),
             (
                 "  for (int  i = 0; i <  3; i  ++)",
                 [
-                    ErrorEntry(file_name="test.java", line=1, column=10, message="Не должно быть более одного пробела подряд внутри строки"),
-                    ErrorEntry(file_name="test.java", line=1, column=22, message="Не должно быть более одного пробела подряд внутри строки"),
-                    ErrorEntry(file_name="test.java", line=1, column=28, message="Не должно быть более одного пробела подряд внутри строки"),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=10,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    ),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=22,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    ),
+                    ErrorEntry(
+                        file_name="test.java",
+                        line=1,
+                        column=28,
+                        message="Не должно быть более одного пробела подряд внутри строки",
+                    ),
                 ],
             ),
             ("int j = i                     // all good", []),
             ("int y = 1", []),
         ],
     )
-    def test_check_no_spaces_more_that_one(self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]) -> None:
+    def test_check_no_spaces_more_that_one(
+        self, linter: SpaceLinter, line: str, expected_errors: list[ErrorEntry]
+    ) -> None:
         errors = linter.check_no_spaces_more_that_one([line], "test.java")
 
         assert len(errors) == len(expected_errors)
@@ -230,7 +408,12 @@ class TestSpaceLinter:
             ErrorEntry(file_name="test.java", line=3, column=4, message="Не должно быть пробелов перед точкой"),
             ErrorEntry(file_name="test.java", line=3, column=5, message="После точки не должен быть пробел"),
             ErrorEntry(file_name="test.java", line=4, column=2, message="Операторы должны быть окружены пробелами"),
-            ErrorEntry(file_name="test.java", line=5, column=3, message="Не должно быть более одного пробела подряд внутри строки"),
+            ErrorEntry(
+                file_name="test.java",
+                line=5,
+                column=3,
+                message="Не должно быть более одного пробела подряд внутри строки",
+            ),
         ]
 
         assert len(errors) == len(expected_errors)

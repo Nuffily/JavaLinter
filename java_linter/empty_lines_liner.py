@@ -1,18 +1,19 @@
 import re
-from typing import Any
 
 from java_linter.dialects import Dialect
-from java_linter.shared import JavaPatterns, ErrorEntry
+from java_linter.shared import ErrorEntry, JavaPatterns
 
 
 class EmptyLineLinter:
+    """Класс, ищущий синтаксические ошибки в .java файлах, связанные с количеством пустых строк подряд"""
 
     def __init__(self, dialect: Dialect):
         self._after_class = dialect.empty_lines.after_class
         self._after_method = dialect.empty_lines.after_method
         self._max_empty = dialect.empty_lines.max_empty
 
-    def seek_for_errors(self, lines: list[str], filename: str) -> list[Any]:
+    def seek_for_errors(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Ищет ошибки в java файле и выдает их в виде списка ErrorEntry"""
         errors = []
 
         if self._max_empty:
@@ -26,7 +27,7 @@ class EmptyLineLinter:
 
         return errors
 
-    def _check_consecutive_empty_lines(self, lines: list[str], filename: str) -> list[Any]:
+    def _check_consecutive_empty_lines(self, lines: list[str], filename: str) -> list[ErrorEntry]:
         """Проверяет, есть ли в поданных строках подряд идущие более чем n пустые строки."""
         errors = []
 
@@ -61,8 +62,9 @@ class EmptyLineLinter:
 
         return errors
 
-    def _check_empty_lines_after_class(self, lines: list[str], filename: str) -> list[Any]:
-        """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
+    def _check_empty_lines_after_class(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, стоит ли после каждого класса нужное кол-во пустых строк"""
+
         errors = []
 
         count = 0
@@ -96,8 +98,8 @@ class EmptyLineLinter:
 
         return errors
 
-    def _check_empty_lines_after_method(self, lines: list[str], filename: str) -> list[Any]:
-        """Проверяет, есть ли в коде подряд идущие более чем n пустые строки."""
+    def _check_empty_lines_after_method(self, lines: list[str], filename: str) -> list[ErrorEntry]:
+        """Проверяет, стоит ли после каждого метода нужное кол-во пустых строк"""
         errors = []
 
         for i, line in enumerate(lines):
@@ -142,6 +144,7 @@ class EmptyLineLinter:
         return errors
 
     def _look_for_end(self, lines: list[str], index: int) -> int:
+        """Ищет конец класса/метода начиная с index, находя следующую неоткрытую '}'"""
 
         open_brackets_count = 1
 

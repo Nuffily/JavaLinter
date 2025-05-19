@@ -11,7 +11,7 @@ from java_linter.space_linter import SpaceLinter
 class Linter:
     """Джава линтер, который ищет ошибки в поданном файле, основываясь на стиле кода, указанном в Dialect"""
 
-    def __init__(self, dialect_filename="", dialect: Dialect | None = None):
+    def __init__(self, dialect_filename: str = "", dialect: Dialect | None = None):
         """При отсутствии dialect_filename использует свой базовый"""
 
         self._dialect = dialect if dialect else self._get_dialect(dialect_filename)

@@ -1,6 +1,6 @@
 import pytest
 
-from java_linter.dialects import Dialect, NamingRule, NamingDialect, EmptyLineCountDialect, SpaceDialect
+from java_linter.dialects import Dialect, EmptyLineCountDialect, NamingDialect, NamingRule, SpaceDialect
 from java_linter.naming_linter import NamingLinter
 from java_linter.shared import ErrorEntry
 
